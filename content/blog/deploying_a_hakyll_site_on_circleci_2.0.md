@@ -5,6 +5,8 @@ author: Andrew Dawson
 tags: CircleCI, Haskell, Hakyll
 ---
 
+Note: this document is no longer current.
+
 This site is generated using the [Hakyll](https://jaspervdj.be/hakyll/) library
 and deployed to Github Pages using CircleCI 2.0. This post provides some
 details on how this is done.

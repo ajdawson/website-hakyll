@@ -30,4 +30,4 @@ jobs:
           external_repository: ajdawson/ajdawson.github.io
           publish_branch: master
           publish_dir: ./_site
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
