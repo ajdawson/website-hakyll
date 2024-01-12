@@ -2,7 +2,7 @@
 title: Contact
 ---
 
-E-mail: [ajdawson@acm.org](mailto:ajdawson@acm.org)
+E-mail: [ajdatm@gmail.com](mailto:ajdatm@gmail.com)
 
 Twitter: [\@ajdawson](https://twitter.com/ajdawson)
 
