@@ -1,7 +1,10 @@
-name: Publish the site to Github Pages (ajdawson.github.io)
+name: Build the site and publish to Github Pages (ajdawson.github.io)
 
 on:
   push:
+    branches:
+      - master
+  pull_request:
     branches:
       - master
 
@@ -41,6 +44,7 @@ jobs:
         run: stack exec site rebuild
 
       - name: Deploy to Github Pages
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/HEADS/master'}}
         uses: peaceiris/actions-gh-pages@v3
         with:
           external_repository: ajdawson/ajdawson.github.io
