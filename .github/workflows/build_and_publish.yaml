@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy to Github Pages
         if: ${{ github.event_name == 'push' && github.ref == 'refs/HEADS/master'}}
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           external_repository: ajdawson/ajdawson.github.io
           publish_branch: master
