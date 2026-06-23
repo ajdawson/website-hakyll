@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,34 +21,46 @@ jobs:
 
       - name: Setup Haskell
         uses: haskell-actions/setup@v2
+        id: setup
         with:
-          enable-stack: true
-          stack-version: 'latest'
+          ghc-version: '9.12'
+          cabal-version: 'latest'
+          cabal-update: true
 
-      - name: Cache ~/.stack
-        uses: actions/cache@v5
-        with:
-          path: ~/.stack
-          key: ${{ runner.os }}-stack-global-${{ hashFiles('stack.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-stack-global-
+      - name: Configure the build
+        run: |
+          cabal configure
+          cabal build all --dry-run
 
-      - name: Cache .stack-work
-        uses: actions/cache@v5
+      - name: Restore cached dependencies
+        uses: actions/cache/restore@v5
+        id: cache
+        env:
+          key: ${{ runner.os }}-ghc-${{ steps.setup.outputs.ghc-version }}-cabal-${{ steps.setup.outputs.cabal-version }}
         with:
-          path: .stack-work
-          key: ${{ runner.os }}-stack-work-${{ hashFiles('stack.yaml') }}-${{ hashFiles('**/*.hs') }}
-          restore-keys: |
-            ${{ runner.os }}-stack-work-
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ env.key }}-plan-${{ hashFiles('**/plan.json') }}
+          restore-keys: ${{ env.key }}-
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: cabal build all --only-dependencies
+
+      - name: Save cached dependencies
+        uses: actions/cache/save@v5
+        if: steps.cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.setup.outputs.cabal-store }}
+          key: ${{ steps.cache.outputs.cache-primary-key }}
 
       - name: Build static site generator
-        run: stack build
+        run: cabal build all
 
       - name: Build the static site
-        run: stack exec site rebuild
+        run: cabal run site -- rebuild
 
       - name: Deploy to Github Pages
-        if: success() && github.event_name == 'push' && github.ref == 'refs/HEADS/master'
+        if: success() && github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: peaceiris/actions-gh-pages@v4
         with:
           external_repository: ajdawson/ajdawson.github.io
