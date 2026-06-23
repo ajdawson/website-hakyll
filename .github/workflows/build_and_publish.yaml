@@ -3,10 +3,10 @@ name: Build the site and publish to Github Pages (ajdawson.github.io)
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
 
 concurrency:
   group: build-${{ github.ref }}
